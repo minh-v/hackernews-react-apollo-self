@@ -6,8 +6,8 @@ import * as serviceWorker from "./serviceWorker";
 
 //importing apollo dependencies
 import { ApolloProvider } from "react-apollo";
-import { ApolloClient } from "react-apollo";
-import { createHttpLink } from "react-link-http";
+import { ApolloClient } from "apollo-client";
+import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 //create httpLink that connects ApolloClient with graphQL API
