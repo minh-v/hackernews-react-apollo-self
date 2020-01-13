@@ -21,6 +21,7 @@ class LinkList extends Component {
   render() {
     //pass GraphQL query to query prop,
     //and provide function as its child that returns UI
+    //result of the query passed by query component as parameter object
     //map each link from data from query to to a link component
     return (
       <Query query={FEED_QUERY}>
