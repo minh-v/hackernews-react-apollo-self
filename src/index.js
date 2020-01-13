@@ -10,6 +10,9 @@ import { ApolloClient } from "apollo-client";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
+//importing router
+import { BrowserRouter } from "react-router-dom";
+
 //create httpLink that connects ApolloClient with graphQL API
 //server runs at localhost:4000, uri is the endpoint
 const httpLink = createHttpLink({
@@ -23,10 +26,13 @@ const client = new ApolloClient({
 });
 
 //wrap App in ApolloProvider, passing client as prop
+//wrap app in BrowserRouter so all child components will have access to routing
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+  <BrowserRouter>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </BrowserRouter>,
   document.getElementById("root")
 );
 
