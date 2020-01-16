@@ -4,7 +4,7 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 
 //query as a javascript constant using gql parser function
-const FEED_QUERY = gql`
+export const FEED_QUERY = gql`
   {
     feed {
       links {
@@ -28,6 +28,18 @@ const FEED_QUERY = gql`
 `;
 
 class LinkList extends Component {
+  _updateCacheAfterVote = (store, createVote, linkId) => {
+    //retrieve current state of cached data for FEED_QUERY from store
+    const data = store.readQuery({ query: FEED_QUERY });
+
+    //find the link that the user just upvoted, change the votes to the votes that was passed and therefore rerendering
+    const votedLink = data.feed.links.find(link => link.id === linkId);
+    votedLink.votes = createVote.link.votes;
+
+    //write the data back into the store
+    store.writeQuery({ query: FEED_QUERY, data });
+  };
+
   render() {
     //pass GraphQL query to query prop,
     //and provide function as its child that returns UI
@@ -43,7 +55,12 @@ class LinkList extends Component {
           return (
             <div>
               {data.feed.links.map((link, index) => (
-                <Link key={link.id} link={link} index={index} />
+                <Link
+                  key={link.id}
+                  link={link}
+                  index={index}
+                  updateStoreAfterVote={this._updateCacheAfterVote}
+                />
               ))}
             </div>
           );

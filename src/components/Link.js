@@ -1,6 +1,29 @@
 import React, { Component } from "react";
 import { AUTH_TOKEN } from "../constants";
 import { timeDifferenceForDate } from "../utils";
+import { Mutation } from "react-apollo";
+import gql from "graphql-tag";
+
+//send mutation to vote on a post
+const VOTE_MUTATION = gql`
+  mutation VoteMutation($linkId: ID!) {
+    vote(linkId: $linkId) {
+      id
+      link {
+        id
+        votes {
+          id
+          user {
+            id
+          }
+        }
+      }
+      user {
+        id
+      }
+    }
+  }
+`;
 
 class Link extends Component {
   render() {
@@ -11,11 +34,25 @@ class Link extends Component {
         <div className="flex items-center">
           {/*index for the position to render on the list */}
           <span className="gray">{this.props.index + 1}.</span>
-          {/*if user is signed in, allow them to see the vote button and vote*/}
+          {/*if user is signed in, allow them to see the vote button and vote
+          pass VOTE_MUTATION, link.id as variable, call voteMutation function */}
           {authToken && (
-            <div className="ml1 gray f11" onClick={() => this._voteForLink()}>
-              ▲
-            </div>
+            <Mutation
+              mutatation={VOTE_MUTATION}
+              variables={{ linkId: this.props.link.id }}
+              update={(store, { data: { vote } }) =>
+                this.props.updateStoreAfterVote(store, vote, this.props.link.id)
+              }
+            >
+              {voteMutation => (
+                <div
+                  className="ml1 gray f11"
+                  onClick={() => this._voteForLink()}
+                >
+                  ▲
+                </div>
+              )}
+            </Mutation>
           )}
         </div>
         <div className="ml1">
