@@ -5,8 +5,8 @@ import gql from "graphql-tag";
 
 //query as a javascript constant using gql parser function
 export const FEED_QUERY = gql`
-  {
-    feed {
+  query FeedQuery($first: Int, $skip: Int, $orderBy: LinkOrderByInput) {
+    feed(first: $first, skip: $skip, orderBy: $orderBy) {
       links {
         id
         createdAt
@@ -23,6 +23,7 @@ export const FEED_QUERY = gql`
           }
         }
       }
+      count
     }
   }
 `;
@@ -115,13 +116,17 @@ class LinkList extends Component {
     });
   };
 
+  _getQueryVariables = () => {
+    //temp
+  };
+
   render() {
     //pass GraphQL query to query prop,
     //and provide function as its child that returns UI
     //result of the query passed by query component as parameter object
     //map each link from data from query to to a link component
     return (
-      <Query query={FEED_QUERY}>
+      <Query query={FEED_QUERY} variables={this._getQueryVariables()}>
         {({ loading, error, data, subscribeToMore }) => {
           if (loading) return <div>Loading..</div>;
           if (error) return <div>Error {error.message}</div>;

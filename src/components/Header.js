@@ -16,6 +16,11 @@ class Header extends Component {
             new
           </Link>
           <div className="ml1">|</div>
+          {/*Navigate to top page */}
+          <Link to="/top" className="ml1 no-underline black">
+            top
+          </Link>
+          <div className="ml1">|</div>
           {/*Navigate to Search component */}
           <Link to="/search" className="ml1 no-underline blank">
             search
