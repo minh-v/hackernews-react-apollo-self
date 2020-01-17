@@ -17,6 +17,11 @@ import { BrowserRouter } from "react-router-dom";
 //auth token
 import { AUTH_TOKEN } from "./constants";
 
+//importing apollo link dependencies
+import { split } from "apollo-link";
+import { WebSocketLink } from "apollo-link-ws";
+import { getMainDefinition } from "apollo-utilities";
+
 //create httpLink that connects ApolloClient with graphQL API
 //server runs at localhost:4000, uri is the endpoint
 const httpLink = createHttpLink({
@@ -33,9 +38,32 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+//instantiate WebSocketLink passing subscriptions endpoint.
+//authenticate connection with auth token
+const wsLink = new WebSocketLink({
+  uri: "ws://localhost:4000",
+  options: {
+    reconnect: true,
+    connectionParams: {
+      authToken: localStorage.getItem(AUTH_TOKEN)
+    }
+  }
+});
+
+//split routes request to specific link
+//check if operation is subscription, if true, request forwards to first link, if false, forwards to second
+const link = split(
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query);
+    return kind === "OperationDefinition" && operation === "subscription";
+  },
+  wsLink,
+  authLink.concat(httpLink)
+);
+
 //instantiate ApolloClient passing in httpLink and InMemoryCache instance
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link,
   cache: new InMemoryCache()
 });
 
